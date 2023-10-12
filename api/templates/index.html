@@ -15,7 +15,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   <body>
-    <div style="display: flex;">
+    <div style="display: flex">
       <div style="flex: 1; width: 50%">
         <textarea id="code-editor"></textarea>
       </div>
@@ -61,6 +61,16 @@
           },
         });
       });
+      codeEditor.getDoc().setValue(`
+@verilogify
+def even_fibs(n):
+  a, b = 0, 1
+  while a < n:
+    if a % 2 == 0:
+      yield a
+    a, b = b, a + b
+even_fibs(30)
+                `);
     </script>
   </body>
 </html>
