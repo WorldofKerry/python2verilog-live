@@ -1,9 +1,7 @@
 import tempfile
 import traceback
 from importlib import util
-
 from flask import Flask, jsonify, render_template, request
-
 from python2verilog.api.namespace import get_namespace, namespace_to_verilog
 
 
@@ -32,6 +30,7 @@ def tempfile_wrapper(raw: str):
             result, _ = namespace_to_verilog(ns)
         except Exception:
             result = traceback.format_exc(limit=1)
+            print(traceback.format_exc())
         finally:
             return result
 

@@ -1,4 +1,3 @@
 Flask==3.0.0
-python2verilog
+python2verilog>=0.2.9
 typing-extensions
-matplotlib # TODO: removed in future python2verilog versions
