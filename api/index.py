@@ -4,17 +4,16 @@ from importlib import util
 from flask import Flask, jsonify, render_template, request
 import python2verilog
 from python2verilog.api.namespace import get_namespace, namespace_to_verilog
-
+import importlib.metadata
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def index():
-    try:
-        print(f"{python2verilog.__name__} {python2verilog.__version__}")
-    except Exception:
-        pass
+    print(
+        f"{python2verilog.__name__} {importlib.metadata.version(python2verilog.__name__)}"
+    )
     return render_template("index.html")
 
 
