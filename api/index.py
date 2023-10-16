@@ -28,7 +28,6 @@ def parse(raw: str) -> tuple[str, int]:
         tmp.write(raw.encode())
         tmp.flush()
 
-        error = False
         try:
             spec = util.spec_from_file_location("tmp", tmp.name)
             module = util.module_from_spec(spec)
@@ -36,9 +35,10 @@ def parse(raw: str) -> tuple[str, int]:
 
             ns = get_namespace(tmp.name)
             result, _ = namespace_to_verilog(ns)
+            error = False
         except Exception:
-            error = True
             result = traceback.format_exc(limit=1)
+            error = True
             print(traceback.format_exc())
         finally:
             return result, int(error)
