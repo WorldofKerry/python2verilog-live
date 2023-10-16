@@ -52,8 +52,8 @@
         }
       );
       verilogDisplay.setSize(null, height_no_margin);
-      verilogDisplay.previous_scroll = verilogDisplay.getScrollInfo();
-      verilogDisplay.previous_error = false;
+      verilogDisplay.last_scroll_info = verilogDisplay.getScrollInfo();
+      verilogDisplay.last_status = false;
 
       codeEditor.on("change", function (instance) {
         const code = instance.getValue();
@@ -67,17 +67,17 @@
             if (error) {
               verilogDisplay.getDoc().setValue(response.result);
             } else {
-              // Use previous non-error scroll info
-              const scroll_info = verilogDisplay.previousError
-                ? verilogDisplay.previous_scroll
+              // If last status was non-zero, use last scroll
+              const scroll_info = verilogDisplay.last_status
+                ? verilogDisplay.last_scroll_info
                 : verilogDisplay.getScrollInfo();
-              verilogDisplay.previous_scroll = scroll_info;
+              verilogDisplay.last_scroll_info = scroll_info;
 
               verilogDisplay.getDoc().setValue(response.result);
               verilogDisplay.scrollTo(scroll_info.left, scroll_info.top);
             }
 
-            verilogDisplay.previousError = error;
+            verilogDisplay.last_status = error;
           },
         });
       });

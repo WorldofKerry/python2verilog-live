@@ -35,17 +35,19 @@ def parse(raw: str) -> tuple[str, int]:
 
             ns = get_namespace(tmp.name)
             result, _ = namespace_to_verilog(ns)
-            error = False
+            status = False
+
         except Exception:
             result = traceback.format_exc(limit=1)
-            error = True
+            status = True
             print(traceback.format_exc())
+
         finally:
-            return result, int(error)
+            return result, int(status)
 
 
 @app.route("/api/update", methods=["POST"])
 def parse_py():
     text = request.form["text"]
     result, err = parse(text)
-    return jsonify({"result": result, "error": err})
+    return jsonify({"result": result, "status": err})
