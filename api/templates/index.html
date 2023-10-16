@@ -62,9 +62,9 @@
           url: "/api/update",
           data: { text: code },
           success: function (response) {
-            const { result, error } = response;
+            const { result, status } = response;
 
-            if (error) {
+            if (status) {
               verilogDisplay.getDoc().setValue(response.result);
             } else {
               // If last status was non-zero, use last scroll
@@ -77,7 +77,7 @@
               verilogDisplay.scrollTo(scroll_info.left, scroll_info.top);
             }
 
-            verilogDisplay.last_status = error;
+            verilogDisplay.last_status = status;
           },
         });
       });
