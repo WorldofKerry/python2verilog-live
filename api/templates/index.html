@@ -67,6 +67,7 @@
             if (error) {
               verilogDisplay.getDoc().setValue(response.result);
             } else {
+              // Use previous non-error scroll info
               const scroll_info = verilogDisplay.previousError
                 ? verilogDisplay.previous_scroll
                 : verilogDisplay.getScrollInfo();
