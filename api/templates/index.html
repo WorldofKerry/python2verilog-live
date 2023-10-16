@@ -52,16 +52,31 @@
         }
       );
       verilogDisplay.setSize(null, height_no_margin);
+      verilogDisplay.previous_scroll = verilogDisplay.getScrollInfo();
+      verilogDisplay.previous_error = false;
 
       codeEditor.on("change", function (instance) {
-        var code = instance.getValue();
+        const code = instance.getValue();
         $.ajax({
           type: "POST",
           url: "/api/update",
           data: { text: code },
           success: function (response) {
-            var updatedText = response.updated_text;
-            verilogDisplay.getDoc().setValue(updatedText);
+            if (response.error) {
+              verilogDisplay.getDoc().setValue(response.result);
+              verilogDisplay.previousError = true;
+              return;
+            }
+
+            let scroll_info = verilogDisplay.getScrollInfo();
+            if (verilogDisplay.previousError) {
+              scroll_info = verilogDisplay.previous_scroll;
+            }
+            verilogDisplay.previous_scroll = scroll_info;
+
+            verilogDisplay.getDoc().setValue(response.result);
+            verilogDisplay.scrollTo(scroll_info.left, scroll_info.top);
+            verilogDisplay.previousError = false;
           },
         });
       });
