@@ -62,16 +62,16 @@
           url: "/api/update",
           data: { text: code },
           success: function (response) {
-            if (response.error) {
+            const { result, error } = response;
+            if (error) {
               verilogDisplay.getDoc().setValue(response.result);
               verilogDisplay.previousError = true;
               return;
             }
 
-            let scroll_info = verilogDisplay.getScrollInfo();
-            if (verilogDisplay.previousError) {
-              scroll_info = verilogDisplay.previous_scroll;
-            }
+            const scroll_info = verilogDisplay.previousError
+              ? verilogDisplay.previous_scroll
+              : verilogDisplay.getScrollInfo();
             verilogDisplay.previous_scroll = scroll_info;
 
             verilogDisplay.getDoc().setValue(response.result);
