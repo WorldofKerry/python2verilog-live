@@ -68,10 +68,13 @@
               verilogDisplay.getDoc().setValue(response.result);
             } else {
               // If last status was non-zero, use last scroll
-              const scroll_info = verilogDisplay.last_status
-                ? verilogDisplay.last_scroll_info
-                : verilogDisplay.getScrollInfo();
-              verilogDisplay.last_scroll_info = scroll_info;
+              let scroll_info;
+              if (verilogDisplay.last_status) {
+                scroll_info = verilogDisplay.last_scroll_info;
+              } else {
+                scroll_info = verilogDisplay.getScrollInfo();
+                verilogDisplay.last_scroll_info = scroll_info;
+              }
 
               verilogDisplay.getDoc().setValue(response.result);
               verilogDisplay.scrollTo(scroll_info.left, scroll_info.top);
