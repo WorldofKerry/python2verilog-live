@@ -84,8 +84,7 @@
 def even_fibs(n):
   a, b = 0, 1
   while a < n:
-    if a % 2 == 0:
-      yield a
+    yield a
     a, b = b, a + b
 even_fibs(30)
                 `);
