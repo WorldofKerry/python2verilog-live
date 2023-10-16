@@ -63,20 +63,19 @@
           data: { text: code },
           success: function (response) {
             const { result, error } = response;
+
             if (error) {
               verilogDisplay.getDoc().setValue(response.result);
-              verilogDisplay.previousError = true;
-              return;
+            } else {
+              const scroll_info = verilogDisplay.previousError
+                ? verilogDisplay.previous_scroll
+                : verilogDisplay.getScrollInfo();
+              verilogDisplay.previous_scroll = scroll_info;
+
+              verilogDisplay.getDoc().setValue(response.result);
+              verilogDisplay.scrollTo(scroll_info.left, scroll_info.top);
             }
-
-            const scroll_info = verilogDisplay.previousError
-              ? verilogDisplay.previous_scroll
-              : verilogDisplay.getScrollInfo();
-            verilogDisplay.previous_scroll = scroll_info;
-
-            verilogDisplay.getDoc().setValue(response.result);
-            verilogDisplay.scrollTo(scroll_info.left, scroll_info.top);
-            verilogDisplay.previousError = false;
+            verilogDisplay.previousError = error;
           },
         });
       });
