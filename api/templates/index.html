@@ -26,6 +26,7 @@
     </div>
 
     <script>
+      const height_no_margin = $(document).height() - 20;
       const codeEditor = CodeMirror.fromTextArea(
         document.getElementById("code-editor"),
         {
@@ -37,7 +38,7 @@
           theme: "dracula",
         }
       );
-      codeEditor.setSize(null, "100%");
+      codeEditor.setSize(null, height_no_margin);
 
       const verilogDisplay = CodeMirror.fromTextArea(
         document.getElementById("right-textbox"),
@@ -50,7 +51,7 @@
           theme: "dracula",
         }
       );
-      verilogDisplay.setSize(null, "100%");
+      verilogDisplay.setSize(null, height_no_margin);
 
       codeEditor.on("change", function (instance) {
         var code = instance.getValue();
