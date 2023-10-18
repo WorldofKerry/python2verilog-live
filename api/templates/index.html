@@ -26,7 +26,7 @@
     </div>
 
     <script>
-      const codeEditor = CodeMirror.fromTextArea(
+      const left_editor = CodeMirror.fromTextArea(
         document.getElementById("code-editor"),
         {
           mode: {
@@ -38,7 +38,7 @@
         }
       );
 
-      const verilogDisplay = CodeMirror.fromTextArea(
+      const right_display = CodeMirror.fromTextArea(
         document.getElementById("right-textbox"),
         {
           mode: {
@@ -75,45 +75,46 @@
             const { result, status } = response;
 
             if (status) {
-              verilogDisplay.getDoc().setValue(response.result);
+              right_display.getDoc().setValue(response.result);
             } else {
               // If last status was non-zero, use last scroll
               let scroll_info;
-              if (verilogDisplay.last_status) {
-                scroll_info = verilogDisplay.last_scroll_info;
+              if (right_display.last_status) {
+                scroll_info = right_display.last_scroll_info;
               } else {
-                scroll_info = verilogDisplay.getScrollInfo();
-                verilogDisplay.last_scroll_info = scroll_info;
+                scroll_info = right_display.getScrollInfo();
+                right_display.last_scroll_info = scroll_info;
               }
 
-              verilogDisplay.getDoc().setValue(response.result);
-              verilogDisplay.scrollTo(scroll_info.left, scroll_info.top);
+              right_display.getDoc().setValue(response.result);
+              right_display.scrollTo(scroll_info.left, scroll_info.top);
             }
 
-            verilogDisplay.last_status = status;
+            right_display.last_status = status;
           },
         });
       }
 
+      function resize_editors() {
+        left_editor.setSize(null, height_no_margin());
+        right_display.setSize(null, height_no_margin());
+      }
+
       function main() {
-        function resize() {
-          codeEditor.setSize(null, height_no_margin());
-          verilogDisplay.setSize(null, height_no_margin());
-        }
-        resize();
-        window.onresize = resize;
+        resize_editors();
+        window.onresize = resize_editors;
 
-        verilogDisplay.last_scroll_info = verilogDisplay.getScrollInfo();
-        verilogDisplay.last_status = false;
+        right_display.last_scroll_info = right_display.getScrollInfo();
+        right_display.last_status = false;
 
-        codeEditor.on("change", transpile);
+        left_editor.on("change", transpile);
 
         const after_hash = window.location.hash.substring(1);
         if (after_hash) {
           const py_code = decodeURIComponent(after_hash);
-          codeEditor.getDoc().setValue(py_code);
+          left_editor.getDoc().setValue(py_code);
         } else {
-          codeEditor.getDoc().setValue(`@verilogify
+          left_editor.getDoc().setValue(`@verilogify
 def even_fibs(n):
   a, b = 0, 1
   while a < n:
