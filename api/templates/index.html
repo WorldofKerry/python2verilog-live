@@ -52,8 +52,14 @@
           theme: "dracula",
         }
       );
-      codeEditor.setSize(null, height_no_margin());
-      verilogDisplay.setSize(null, height_no_margin());
+
+      function resize() {
+        codeEditor.setSize(null, height_no_margin());
+        verilogDisplay.setSize(null, height_no_margin());
+      }
+      resize();
+      window.onresize = resize;
+
       verilogDisplay.last_scroll_info = verilogDisplay.getScrollInfo();
       verilogDisplay.last_status = false;
 
@@ -64,9 +70,6 @@
           url: "/api/update",
           data: { text: code },
           success: function (response) {
-            codeEditor.setSize(null, height_no_margin());
-            verilogDisplay.setSize(null, height_no_margin());
-
             const { result, status } = response;
 
             if (status) {
@@ -96,7 +99,7 @@ def even_fibs(n):
     yield a
     a, b = b, a + b
 even_fibs(30)
-                `);
+                      `);
     </script>
   </body>
 </html>
