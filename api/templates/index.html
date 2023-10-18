@@ -63,8 +63,21 @@
       verilogDisplay.last_scroll_info = verilogDisplay.getScrollInfo();
       verilogDisplay.last_status = false;
 
+      function update_hash(text) {
+        const encoded = encodeURIComponent(text);
+        console.log(encoded);
+        const prefix_uri = window.location.href.replace(
+          window.location.hash,
+          ""
+        );
+        console.log(prefix_uri);
+        window.history.replaceState("", "", prefix_uri + "#" + encoded);
+      }
+
       codeEditor.on("change", function (instance) {
         const code = instance.getValue();
+        update_hash(code);
+
         $.ajax({
           type: "POST",
           url: "/api/update",
@@ -92,14 +105,22 @@
           },
         });
       });
-      codeEditor.getDoc().setValue(`@verilogify
+
+      const after_hash = window.location.hash.substring(1);
+      if (after_hash) {
+        console.log(after_hash);
+        const py_code = decodeURIComponent(after_hash);
+        console.log(py_code);
+        codeEditor.getDoc().setValue(py_code);
+      } else {
+        codeEditor.getDoc().setValue(`@verilogify
 def even_fibs(n):
   a, b = 0, 1
   while a < n:
     yield a
     a, b = b, a + b
-even_fibs(30)
-                      `);
+even_fibs(30)`);
+      }
     </script>
   </body>
 </html>
