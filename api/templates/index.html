@@ -65,12 +65,10 @@
 
       function update_hash(text) {
         const encoded = encodeURIComponent(text);
-        console.log(encoded);
         const prefix_uri = window.location.href.replace(
           window.location.hash,
           ""
         );
-        console.log(prefix_uri);
         window.history.replaceState("", "", prefix_uri + "#" + encoded);
       }
 
@@ -108,9 +106,7 @@
 
       const after_hash = window.location.hash.substring(1);
       if (after_hash) {
-        console.log(after_hash);
         const py_code = decodeURIComponent(after_hash);
-        console.log(py_code);
         codeEditor.getDoc().setValue(py_code);
       } else {
         codeEditor.getDoc().setValue(`@verilogify
