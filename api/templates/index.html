@@ -26,7 +26,9 @@
     </div>
 
     <script>
-      const height_no_margin = $(document).height() - 20;
+      const height_no_margin = () => {
+        return $(window).height() - 20;
+      };
       const codeEditor = CodeMirror.fromTextArea(
         document.getElementById("code-editor"),
         {
@@ -38,7 +40,6 @@
           theme: "dracula",
         }
       );
-      codeEditor.setSize(null, height_no_margin);
 
       const verilogDisplay = CodeMirror.fromTextArea(
         document.getElementById("right-textbox"),
@@ -51,7 +52,8 @@
           theme: "dracula",
         }
       );
-      verilogDisplay.setSize(null, height_no_margin);
+      codeEditor.setSize(null, height_no_margin());
+      verilogDisplay.setSize(null, height_no_margin());
       verilogDisplay.last_scroll_info = verilogDisplay.getScrollInfo();
       verilogDisplay.last_status = false;
 
@@ -62,6 +64,9 @@
           url: "/api/update",
           data: { text: code },
           success: function (response) {
+            codeEditor.setSize(null, height_no_margin());
+            verilogDisplay.setSize(null, height_no_margin());
+
             const { result, status } = response;
 
             if (status) {
