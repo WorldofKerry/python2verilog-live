@@ -51,13 +51,6 @@
       );
 
       /**
-       * Gets current window height without CodeMirror margins (an estimate)
-       */
-      function get_window_height_no_margin() {
-        return $(window).height() - 20;
-      }
-
-      /**
        * Updates URI's value after the # based on text
        */
       function update_hash_and_push_state(text) {
@@ -71,7 +64,6 @@
           "",
           prefix_uri + "#" + encoded
         );
-        console.log("len states after push" + window.history.length);
       }
 
       /**
@@ -119,12 +111,9 @@
        * Resizes CodeMirror windows based on zoom/window height
        */
       function resize_editors() {
-        left_editor.setSize(null, get_window_height_no_margin());
-        right_display.setSize(null, get_window_height_no_margin());
-      }
-
-      function populate_py_code(e) {
-        left_editor.getDoc().setValue(e.state.text);
+        const height = $(window).height() - 20;
+        left_editor.setSize(null, height);
+        right_display.setSize(null, height);
       }
 
       function main() {
@@ -151,7 +140,7 @@ def even_fibs(n):
     a, b = b, a + b
 even_fibs(30)`);
         }
-        window.onpopstate = populate_py_code;
+        window.onpopstate = (e) => left_editor.getDoc().setValue(e.state.text);
       }
 
       main();
