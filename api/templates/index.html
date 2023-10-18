@@ -26,9 +26,6 @@
     </div>
 
     <script>
-      const height_no_margin = () => {
-        return $(window).height() - 20;
-      };
       const codeEditor = CodeMirror.fromTextArea(
         document.getElementById("code-editor"),
         {
@@ -53,15 +50,9 @@
         }
       );
 
-      function resize() {
-        codeEditor.setSize(null, height_no_margin());
-        verilogDisplay.setSize(null, height_no_margin());
+      function height_no_margin() {
+        return $(window).height() - 20;
       }
-      resize();
-      window.onresize = resize;
-
-      verilogDisplay.last_scroll_info = verilogDisplay.getScrollInfo();
-      verilogDisplay.last_status = false;
 
       function update_hash(text) {
         const encoded = encodeURIComponent(text);
@@ -72,7 +63,7 @@
         window.history.replaceState("", "", prefix_uri + "#" + encoded);
       }
 
-      codeEditor.on("change", function (instance) {
+      function transpile(instance) {
         const code = instance.getValue();
         update_hash(code);
 
@@ -102,21 +93,36 @@
             verilogDisplay.last_status = status;
           },
         });
-      });
+      }
 
-      const after_hash = window.location.hash.substring(1);
-      if (after_hash) {
-        const py_code = decodeURIComponent(after_hash);
-        codeEditor.getDoc().setValue(py_code);
-      } else {
-        codeEditor.getDoc().setValue(`@verilogify
+      function main() {
+        function resize() {
+          codeEditor.setSize(null, height_no_margin());
+          verilogDisplay.setSize(null, height_no_margin());
+        }
+        resize();
+        window.onresize = resize;
+
+        verilogDisplay.last_scroll_info = verilogDisplay.getScrollInfo();
+        verilogDisplay.last_status = false;
+
+        codeEditor.on("change", transpile);
+
+        const after_hash = window.location.hash.substring(1);
+        if (after_hash) {
+          const py_code = decodeURIComponent(after_hash);
+          codeEditor.getDoc().setValue(py_code);
+        } else {
+          codeEditor.getDoc().setValue(`@verilogify
 def even_fibs(n):
   a, b = 0, 1
   while a < n:
     yield a
     a, b = b, a + b
 even_fibs(30)`);
+        }
       }
+      main();
     </script>
   </body>
 </html>
