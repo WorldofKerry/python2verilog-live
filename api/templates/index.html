@@ -50,10 +50,16 @@
         }
       );
 
-      function height_no_margin() {
+      /**
+      Gets current window height without CodeMirror margins (an estimate)
+      */
+      function get_window_height_no_margin() {
         return $(window).height() - 20;
       }
 
+      /**
+      Updates URI's value after the # based on text
+      */
       function update_hash(text) {
         const encoded = encodeURIComponent(text);
         const prefix_uri = window.location.href.replace(
@@ -63,52 +69,60 @@
         window.history.replaceState("", "", prefix_uri + "#" + encoded);
       }
 
+      /**
+      Transpiles Python code to Verilog (or error message)
+      Sets to old scroll position (unless error)
+      */
       function transpile(instance) {
         const code = instance.getValue();
         update_hash(code);
+
+        function on_success(response) {
+          const { result, status } = response;
+
+          if (status) {
+            right_display.getDoc().setValue(response.result);
+          } else {
+            // If last status was non-zero, use last scroll
+            let scroll_info;
+            if (right_display.last_status) {
+              scroll_info = right_display.last_scroll_info;
+            } else {
+              scroll_info = right_display.getScrollInfo();
+              right_display.last_scroll_info = scroll_info;
+            }
+
+            right_display.getDoc().setValue(response.result);
+            right_display.scrollTo(scroll_info.left, scroll_info.top);
+          }
+
+          right_display.last_status = status;
+        }
 
         $.ajax({
           type: "POST",
           url: "/api/update",
           data: { text: code },
-          success: function (response) {
-            const { result, status } = response;
-
-            if (status) {
-              right_display.getDoc().setValue(response.result);
-            } else {
-              // If last status was non-zero, use last scroll
-              let scroll_info;
-              if (right_display.last_status) {
-                scroll_info = right_display.last_scroll_info;
-              } else {
-                scroll_info = right_display.getScrollInfo();
-                right_display.last_scroll_info = scroll_info;
-              }
-
-              right_display.getDoc().setValue(response.result);
-              right_display.scrollTo(scroll_info.left, scroll_info.top);
-            }
-
-            right_display.last_status = status;
-          },
+          success: on_success,
         });
       }
 
       function resize_editors() {
-        left_editor.setSize(null, height_no_margin());
-        right_display.setSize(null, height_no_margin());
+        left_editor.setSize(null, get_window_height_no_margin());
+        right_display.setSize(null, get_window_height_no_margin());
       }
 
       function main() {
+        // Set up auto-resize of editors
         resize_editors();
         window.onresize = resize_editors;
 
+        // Sets up backend query event
+        left_editor.on("change", transpile);
         right_display.last_scroll_info = right_display.getScrollInfo();
         right_display.last_status = false;
 
-        left_editor.on("change", transpile);
-
+        // Load Python code
         const after_hash = window.location.hash.substring(1);
         if (after_hash) {
           const py_code = decodeURIComponent(after_hash);
