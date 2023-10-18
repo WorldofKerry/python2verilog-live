@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/python/python.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/verilog/verilog.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   <body>
@@ -54,7 +55,7 @@
        * Updates URI's value after the # based on text
        */
       function update_hash_and_push_state(text) {
-        const encoded = encodeURIComponent(text);
+        const encoded = LZString.compressToBase64(text);
         const prefix_uri = window.location.href.replace(
           window.location.hash,
           ""
@@ -129,7 +130,7 @@
         // Load Python code
         const after_hash = window.location.hash.substring(1);
         if (after_hash) {
-          const py_code = decodeURIComponent(after_hash);
+          const py_code = LZString.decompressFromBase64(after_hash);
           left_editor.getDoc().setValue(py_code);
         } else {
           left_editor.getDoc().setValue(`@verilogify
