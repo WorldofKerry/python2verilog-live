@@ -60,7 +60,7 @@
       /**
        * Updates URI's value after the # based on text
        */
-      function update_hash(text) {
+      function update_hash_and_push_state(text) {
         const encoded = encodeURIComponent(text);
         const prefix_uri = window.location.href.replace(
           window.location.hash,
@@ -81,12 +81,8 @@
       function transpile(instance, changeObj) {
         const code = instance.getValue();
 
-        console.log(changeObj);
         if (changeObj.origin !== "setValue") {
-          console.log("true");
-          update_hash(code);
-        } else {
-          console.log("false");
+          update_hash_and_push_state(code);
         }
 
         function on_success(response) {
@@ -128,26 +124,7 @@
       }
 
       function populate_py_code(e) {
-        if (e.state) {
-          console.log("first ifelse");
-          console.log("len states after pop" + window.history.length);
-          left_editor.getDoc().setValue(e.state.text);
-        } else {
-          console.log("second ifelse");
-          const after_hash = window.location.hash.substring(1);
-          if (after_hash) {
-            const py_code = decodeURIComponent(after_hash);
-            left_editor.getDoc().setValue(py_code);
-          } else {
-            left_editor.getDoc().setValue(`@verilogify
-def even_fibs(n):
-  a, b = 0, 1
-  while a < n:
-    yield a
-    a, b = b, a + b
-even_fibs(30)`);
-          }
-        }
+        left_editor.getDoc().setValue(e.state.text);
       }
 
       function main() {
@@ -161,9 +138,22 @@ even_fibs(30)`);
         right_display.last_status = false;
 
         // Load Python code
-        populate_py_code({ state: false });
+        const after_hash = window.location.hash.substring(1);
+        if (after_hash) {
+          const py_code = decodeURIComponent(after_hash);
+          left_editor.getDoc().setValue(py_code);
+        } else {
+          left_editor.getDoc().setValue(`@verilogify
+def even_fibs(n):
+  a, b = 0, 1
+  while a < n:
+    yield a
+    a, b = b, a + b
+even_fibs(30)`);
+        }
         window.onpopstate = populate_py_code;
       }
+
       main();
     </script>
   </body>
