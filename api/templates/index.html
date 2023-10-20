@@ -133,13 +133,44 @@
           const py_code = LZString.decompressFromBase64(after_hash);
           left_editor.getDoc().setValue(py_code);
         } else {
-          left_editor.getDoc().setValue(`@verilogify
-def even_fibs(n):
-  a, b = 0, 1
-  while a < n:
-    yield a
-    a, b = b, a + b
-even_fibs(30)`);
+          left_editor.getDoc().setValue(`
+@verilogify
+def p2vrange(base: int, limit: int, step: int) -> int:
+    """
+    Simplified version of Python's built-in range function
+    """
+    while base < limit:
+        yield base
+        base += step
+
+@verilogify
+def fib(n: int) -> int:
+    """
+    Fibonacci sequence
+    """
+    a, b = 0, 1
+    for _ in p2vrange(0, n, 1):
+        yield a
+        a, b = b, a + b
+
+@verilogify
+def multiplier(multiplicand: int, multiplier: int) -> int:
+    product = 0
+    while multiplier > 0:
+        product += multiplicand
+        multiplier -= 1
+    return product
+
+@verilogify
+def fib_product(n):
+    """
+    Yields the product of the first n fibonacci numbers
+    """
+    for num in fib(n):
+        prod = multiplier(num, num)
+        yield prod
+fib_product(30)
+`);
         }
         window.onpopstate = (e) => left_editor.getDoc().setValue(e.state.text);
       }
