@@ -20,17 +20,16 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
-  <body style="padding: 0; margins: 0">
-    <div style="display: flex; height: 100vh; padding: 0; margins: 0">
-      <div
-        id="left"
-        style="flex: 1; background-color: lightblue; padding: 0; margins: 0"
-      ></div>
-      <div
-        id="right"
-        style="flex: 1; background-color: lightcoral; padding: 0; margins: 0"
-      ></div>
+  <body>
+    <div style="display: flex; height: 100vh">
+      <div id="left" style="flex: 1; background-color: lightblue"></div>
+      <div id="right" style="flex: 1; background-color: lightcoral"></div>
     </div>
+    <style>
+      .monaco-editor {
+        position: absolute !important;
+      }
+    </style>
     <script>
       self.require = {
         paths: {
@@ -53,11 +52,11 @@ def func(name: int) -> int:
 	yield a`,
           language: "python",
           theme: "vs-dark",
-          glyphMargin: false,
-          folding: false,
-          lineNumbers: "off",
+          lineNumbers: true,
           lineDecorationsWidth: 0,
           lineNumbersMinChars: 0,
+          wordwrap: "on",
+          automaticLayout: true,
         }
       );
 
@@ -71,9 +70,9 @@ def func(name: int) -> int:
           theme: "vs-dark",
           glyphMargin: false,
           folding: false,
-          lineNumbers: "off",
-          lineDecorationsWidth: 0,
-          lineNumbersMinChars: 0,
+          lineNumbers: true,
+          wordwrap: "on",
+          automaticLayout: true,
         }
       );
 
