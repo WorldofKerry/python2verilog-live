@@ -80,13 +80,13 @@ def func(name: int) -> int:
       /**
        * Updates URI's value after the # based on text
        */
-      function update_hash_and_push_state(text) {
+      function update_uri_hash(text) {
         const encoded = LZString.compressToBase64(text);
         const prefix_uri = window.location.href.replace(
           window.location.hash,
           ""
         );
-        window.history.pushState(
+        window.history.replaceState(
           { text: text },
           "",
           prefix_uri + "#" + encoded
@@ -100,9 +100,12 @@ def func(name: int) -> int:
       function transpile(event) {
         const code = left_editor.getValue();
 
+        update_uri_hash(code);
+
         function on_success(response) {
           const { result, status } = response;
           if (status) {
+            console.clear();
             console.error(result);
           } else {
             right_display.getModel().setValue(response.result);
@@ -126,8 +129,7 @@ def func(name: int) -> int:
           const py_code = LZString.decompressFromBase64(after_hash);
           left_editor.getModel().setValue(py_code);
         } else {
-          left_editor.getModel().setValue(`
-@verilogify
+          left_editor.getModel().setValue(`@verilogify
 def p2vrange(base: int, limit: int, step: int) -> int:
     """
     Simplified version of Python's built-in range function
@@ -162,6 +164,7 @@ def fib_product(n):
     for num in fib(n):
         prod = multiplier(num, num)
         yield prod
+
 fib_product(30)
       `);
         }
