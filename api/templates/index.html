@@ -11,7 +11,11 @@
   <body>
     <h2>Monaco Editor Localization Sample</h2>
     <div
-      id="container"
+      id="left"
+      style="width: 800px; height: 600px; border: 1px solid grey"
+    ></div>
+    <div
+      id="right"
       style="width: 800px; height: 600px; border: 1px solid grey"
     ></div>
     <script>
@@ -19,7 +23,6 @@
         paths: {
           vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs",
         },
-        // "vs/nls": { availableLanguages: { "*": "zh-cn" } },
       };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.js"></script>
@@ -27,13 +30,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/editor/editor.main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/basic-languages/python/python.js"></script>
     <script>
-      monaco.editor.create(document.getElementById("container"), {
-        value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join(
-          "\n"
-        ),
-        language: "python",
-        theme: "vs-dark",
-      });
+      const left_editior = monaco.editor.create(
+        document.getElementById("left"),
+        {
+          value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join(
+            "\n"
+          ),
+          language: "python",
+          theme: "vs-dark",
+        }
+      );
+
+      const right_display = monaco.editor.create(
+        document.getElementById("right"),
+        {
+          value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join(
+            "\n"
+          ),
+          language: "python",
+          theme: "vs-dark",
+        }
+      );
     </script>
   </body>
 </html>
