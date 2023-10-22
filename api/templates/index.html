@@ -20,16 +20,17 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
-  <body>
-    <h2>Monaco Editor Localization Sample</h2>
-    <div
-      id="left"
-      style="width: 800px; height: 600px; border: 1px solid grey"
-    ></div>
-    <div
-      id="right"
-      style="width: 800px; height: 600px; border: 1px solid grey"
-    ></div>
+  <body style="padding: 0; margins: 0">
+    <div style="display: flex; height: 100vh; padding: 0; margins: 0">
+      <div
+        id="left"
+        style="flex: 1; background-color: lightblue; padding: 0; margins: 0"
+      ></div>
+      <div
+        id="right"
+        style="flex: 1; background-color: lightcoral; padding: 0; margins: 0"
+      ></div>
+    </div>
     <script>
       self.require = {
         paths: {
@@ -46,11 +47,17 @@
       const left_editor = monaco.editor.create(
         document.getElementById("left"),
         {
-          value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join(
-            "\n"
-          ),
+          value: `@verilogify
+def func(name: int) -> int:
+	a = 15
+	yield a`,
           language: "python",
           theme: "vs-dark",
+          glyphMargin: false,
+          folding: false,
+          lineNumbers: "off",
+          lineDecorationsWidth: 0,
+          lineNumbersMinChars: 0,
         }
       );
 
@@ -62,6 +69,11 @@
           ),
           language: "systemverilog",
           theme: "vs-dark",
+          glyphMargin: false,
+          folding: false,
+          lineNumbers: "off",
+          lineDecorationsWidth: 0,
+          lineNumbersMinChars: 0,
         }
       );
 
@@ -88,33 +100,13 @@
       function transpile(event) {
         const code = left_editor.getValue();
 
-        /*
-              if (changeObj.origin !== "setValue") {
-                update_hash_and_push_state(code);
-              }
-              */
-
         function on_success(response) {
-          console.log(response);
           const { result, status } = response;
-
           if (status) {
-            right_display.getModel().setValue(response.result);
+            console.error(result);
           } else {
-            // If last status was non-zero, use last scroll
-            let scroll_info;
-            if (right_display.last_status) {
-              scroll_info = right_display.last_scroll_info;
-            } else {
-              scroll_info = right_display.getScrollInfo();
-              right_display.last_scroll_info = scroll_info;
-            }
-
             right_display.getModel().setValue(response.result);
-            right_display.scrollTo(scroll_info.left, scroll_info.top);
           }
-
-          right_display.last_status = status;
         }
 
         $.ajax({
@@ -125,24 +117,8 @@
         });
       }
 
-      /**
-       * Resizes CodeMirror windows based on zoom/window height
-       */
-      function resize_editors() {
-        const height = $(window).height() - 20;
-        // left_editor.setSize(null, height);
-        // right_display.setSize(null, height);
-      }
-
       function main() {
-        // Set up auto-resize of editors
-        resize_editors();
-        window.onresize = resize_editors;
-
-        // Sets up backend query event
         left_editor.getModel().onDidChangeContent(transpile);
-        right_display.last_scroll_info = right_display.getScrollInfo();
-        right_display.last_status = false;
 
         // Load Python code
         const after_hash = window.location.hash.substring(1);
@@ -151,42 +127,42 @@
           left_editor.getModel().setValue(py_code);
         } else {
           left_editor.getModel().setValue(`
-      @verilogify
-      def p2vrange(base: int, limit: int, step: int) -> int:
-          """
-          Simplified version of Python's built-in range function
-          """
-          while base < limit:
-              yield base
-              base += step
+@verilogify
+def p2vrange(base: int, limit: int, step: int) -> int:
+    """
+    Simplified version of Python's built-in range function
+    """
+    while base < limit:
+        yield base
+        base += step
 
-      @verilogify
-      def fib(n: int) -> int:
-          """
-          Fibonacci sequence
-          """
-          a, b = 0, 1
-          for _ in p2vrange(0, n, 1):
-              yield a
-              a, b = b, a + b
+@verilogify
+def fib(n: int) -> int:
+    """
+    Fibonacci sequence
+    """
+    a, b = 0, 1
+    for _ in p2vrange(0, n, 1):
+        yield a
+        a, b = b, a + b
 
-      @verilogify
-      def multiplier(multiplicand: int, multiplier: int) -> int:
-          product = 0
-          while multiplier > 0:
-              product += multiplicand
-              multiplier -= 1
-          return product
+@verilogify
+def multiplier(multiplicand: int, multiplier: int) -> int:
+    product = 0
+    while multiplier > 0:
+        product += multiplicand
+        multiplier -= 1
+    return product
 
-      @verilogify
-      def fib_product(n):
-          """
-          Yields the product of the first n fibonacci numbers
-          """
-          for num in fib(n):
-              prod = multiplier(num, num)
-              yield prod
-      fib_product(30)
+@verilogify
+def fib_product(n):
+    """
+    Yields the product of the first n fibonacci numbers
+    """
+    for num in fib(n):
+        prod = multiplier(num, num)
+        yield prod
+fib_product(30)
       `);
         }
         window.onpopstate = (e) =>
